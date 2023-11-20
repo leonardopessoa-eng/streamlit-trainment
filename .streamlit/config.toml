@@ -1,0 +1,7 @@
+[theme]
+primaryColor = "#FFFFFF"
+backgroundColor = "#EFF2FB" # sepia yellow
+secondaryBackgroundColor =  "#E0E6F8"
+textColor = "#2E2E2E"
+# Font family (serif | sans serif | mono) for the page. Will not impact code areas.
+font = "serif"
