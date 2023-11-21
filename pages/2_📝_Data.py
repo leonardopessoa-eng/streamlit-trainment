@@ -34,10 +34,12 @@ def rename_columns(df):
         columns={
             "ASSIGNED_BY_NAME": "salesperson",
             "OPPORTUNITY_ACCOUNT": "amount",
+            "TITLE": "title",
             "SOURCE_NAME": "source",
             "COMPANY_NAME": "company",
             "DATE_CREATE": "date",
-            "ACCOUNT_CURRENCY_ID": "account_currency_id"
+            "ACCOUNT_CURRENCY_ID": "account_currency_id",
+            "STAGE_NAME": "status"
         }
     )
     return renamed_df
@@ -45,13 +47,18 @@ def rename_columns(df):
 # Converting BRL to USD
 def preprocessing(df):
     df = rename_columns(df)
-    df['amount'] = df['amount'].str.replace(',', '.').astype(float)
+    df['amount'] = df['amount'].str.replace(',', '').astype(float)
     df['amount'] = df.apply(
         lambda row: row['amount'] / 5
         if row['account_currency_id'] == 'BRL'
         else row['amount'], axis=1
     )
-    df = df[["company", "TITLE", "source", "date", "salesperson", "amount"]].sort_values(by='amount', ascending=False)
+    df = df.loc[df['status'].isin(['Negócio Fechado'])]
+    # Replace null values in 'source' with a specific value ('Não Identificado')
+    replacement_value = 'Não Identificado'
+    df['source'].fillna(replacement_value, inplace=True)
+    df['company'].fillna(replacement_value, inplace=True)
+    df = df[["company", "title", "source", "date", "salesperson", "amount"]].sort_values(by='amount', ascending=False)
     return df
 
 # Date selector (filter):
@@ -100,42 +107,43 @@ salesperson_option = selectors(final_df, "salesperson")
 source_option = selectors(final_df, "source")
 company_option = selectors(final_df, "company")
 
+# Condition 1
 if salesperson_option and source_option and company_option:
     df = final_df.loc[final_df['salesperson'].isin([salesperson_option])]
     df = df.loc[df['source'].isin([source_option])]
     df = df.loc[df['company'].isin([company_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# Condition 2
 elif salesperson_option and source_option:
     df = final_df.loc[final_df['salesperson'].isin([salesperson_option])]
     df = df.loc[df['source'].isin([source_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# Condition 3
 elif salesperson_option and company_option:
     df = final_df.loc[final_df['salesperson'].isin([salesperson_option])]
     df = df.loc[df['company'].isin([company_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# Condition 4
 elif source_option and company_option:
     df = final_df.loc[final_df['source'].isin([source_option])]
     df = df.loc[df['company'].isin([company_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# Condition 5
 elif salesperson_option:
     df = final_df.loc[final_df['salesperson'].isin([salesperson_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# Condition 6
 elif source_option :
     df = final_df.loc[final_df['source'].isin([source_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# Condition 7
 elif company_option:
     df = final_df.loc[final_df['company'].isin([company_option])]
     st.dataframe(df, hide_index=True, use_container_width=True)
-
+# All data
 else:
     total_row = pd.DataFrame({'company': ['Total'],
-                           'TITLE': "",
+                           'title': "",
                            'source': "",
                            'date': "",
                            'salesperson': "",
