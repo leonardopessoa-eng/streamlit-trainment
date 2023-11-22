@@ -5,14 +5,14 @@ from operators.selectors import Selector
 
 # Layout:
 st.set_page_config(
-    page_title = "Sales Dashboard",
+    page_title = "Sales Overview",
     page_icon = ":chart_with_upwards_trend:",
     layout = "wide"
 )
 col0, col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1, 1])
 st.markdown("""---""")
 col1_1, col2_1 = st.columns([1, 1])
-col0.title("Amount")
+col0.title("Sales Overview")
 # ------------------------------------------------------------------- #
 
 # Load Data:
